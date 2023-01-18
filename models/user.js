@@ -11,7 +11,12 @@ const UserSchema = new Schema({
         type: String,
         unique: true,
         required: true,
-        //need to add match email
+        validate: {
+            validator: function (v) {
+                return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
+            },
+            message: props => `${props.value} is not a valid email address!`
+        },
     },
     thoughts: [
         {
@@ -31,14 +36,13 @@ const UserSchema = new Schema({
             virtuals: true
         },
         id: false
-    })
-
-    UserSchema.virtual('friendCount').get(function () {
-        return this.friends.length;
     });
 
-    const User = model('User', UserSchema);
+UserSchema.virtual('friendCount').get(function () {
+    return this.friends.length;
+});
 
-    module.exports = User;
+const User = model('User', UserSchema);
 
-    
+module.exports = User;
+
